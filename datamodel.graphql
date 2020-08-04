@@ -1,5 +1,19 @@
+# This is the Schema for Prisma that will generate code in prisma.graphql 
+
 type User {
   id: ID! @id
   name: String!
   email: String! @unique
+}
+
+type Item {
+  id: ID! @id
+  title: String!
+  description: String!
+  image: String
+  largeImage: String
+  price: Int!
+  # createdAt: DateTime! 
+  # updatedAt: DateTime!
+  # user: User!
 }
