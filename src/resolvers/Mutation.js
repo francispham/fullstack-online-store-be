@@ -13,7 +13,24 @@ const Mutations = {
     // => Specify what data gets returned from the db when we create it.
     console.log('item:', item)
     return item;
-  }
+  },
+
+  updateItem(parent, args, context, info) {
+    // First take a Copy of the Updates
+    const updates = { ...args };
+    // Remove the ID from the Updates
+    delete updates.id;
+    // Run the Update Method
+    return context.db.mutation.updateItem(
+      {
+        data: updates,
+        where: {
+          id: args.id,
+        },
+      },
+      info
+    );
+  },
 };
 
 module.exports = Mutations;
