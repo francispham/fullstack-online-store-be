@@ -12,6 +12,8 @@ const Query = {
   },
   // Query a Single Item
   item: forwardTo('db'),
+  // Query for Pagination
+  itemsConnection: forwardTo('db'),
 };
 
 module.exports = Query;

@@ -11,7 +11,7 @@ type Mutation {
 }
 
 type Query {
-  # This line is belong to this commit!
   items: [Item]!
   item(where: ItemWhereUniqueInput!): Item
+  itemsConnection(where: ItemWhereInput): ItemConnection!
 }
