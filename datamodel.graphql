@@ -13,7 +13,7 @@ type Item {
   image: String
   largeImage: String
   price: Int!
-  # createdAt: DateTime! 
+  createdAt: DateTime! @createdAt
   # updatedAt: DateTime!
   # user: User!
 }
