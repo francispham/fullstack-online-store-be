@@ -68,6 +68,28 @@ const Mutations = {
     // Finally Return the User to the Browser
     return user;
   },
+
+  async signin(parent, { email, password }, context, info) {
+    // 1. Check if there is a User with that Email
+    const user = await context.db.query.user({ where: { email } });
+    if (!user) {
+      throw new Error(`No such User found for Email ${email}`);
+    };
+    // 2. Check if their password is correct
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) {
+      throw new Error('Invalid Password!');
+    };
+    // 3. Generate the JWT Token
+    const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
+    // 4. Set the Cookie with the Token
+    context.response.cookie('token', token, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 365,
+    });
+    // 5. Return the User
+    return user;
+  },
 };
 
 module.exports = Mutations;
