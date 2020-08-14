@@ -14,6 +14,16 @@ const Query = {
   item: forwardTo('db'),
   // Query for Pagination
   itemsConnection: forwardTo('db'),
+  // Query for Login Current User
+  me(parent, args, context, info) {
+    // Check if there is a Current User ID
+    if(!context.request.userId) {
+      return null;
+    };
+    return context.db.query.user({
+      where: { id: context.request.userId },
+    }, info);
+  }
 };
 
 module.exports = Query;
