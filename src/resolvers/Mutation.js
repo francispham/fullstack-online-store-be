@@ -114,6 +114,43 @@ const Mutations = {
     console.log('res:', res)
     return { message: 'Thanks!!!'}
     // 3. Email them that Reset Token
+  },
+
+  async resetPassword(parent, args, context, info) {
+    // 1. Check if the Passwords match
+    if (args.password !== args.confirmPassword) {
+      throw new Error("Passwords Don't Match");
+    };
+    // 2. Check if it's a legit Reset Token & Expired
+    const [user] = await context.db.query.users({ // Grab the First User
+      where: {
+        resetToken: args.requestToken,
+        resetTokenExpiry_gte: Date.now() - 3600000,
+      },
+    });
+    if (!user) {
+      throw new Error('This Token is either Invalid or Expired!!')
+    };
+    // 3. Hash their New Password
+    const password = await bcrypt.hash(args.password, 10);
+    // 4. Save the New Password to the User and remove the Old resetToken fields
+    const updatedUser = await context.db.mutation.updateUser({
+      where: { email: user.email },
+      data: {
+        password,
+        resetToken: null,
+        resetTokenExpiry: null,
+      },
+    });
+    // 5. Generate JWT
+    const token = jwt.sign({ userId: updatedUser.id }, process.env.APP_SECRET);
+    // 6. Set the JWT Cookie
+    context.response.cookie('token', token, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 365,
+    });
+    // 7. Return the Updated User
+    return updatedUser;
   }
 };
 
