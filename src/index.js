@@ -11,8 +11,7 @@ const server = createServer();
 // Use Express Middleware to handle cookies (JWT)
 server.express.use(cookieParser());
 
-// Use Express Middleware to populate current user
-// Decode the JWT so we cant get the User Id on each Request
+// 1. Decode the JWT so we can get the User Id on each Request
 server.express.use((req, res, next) => {
   const { token } = req.cookies;
   if (token) {
@@ -22,6 +21,18 @@ server.express.use((req, res, next) => {
   }
   next();
 });
+
+// 2. Use Express Middleware to Populate Current User on each Request
+server.express.use( async (req, res, next) => {
+  // if they aren't Logged in, skip this
+  if (!req.userId) return next();
+  const user = await db.query.user(
+    { where: { id: req.userId }},
+    '{ id, permissions, email, name }'
+  );
+  req.user= user;
+  next();
+})
 
 server.start({
   cors: {
