@@ -4,11 +4,9 @@ type SuccessMessage {
 }
 
 type Mutation {
-  createItem(title: String, description: String, price: Int, image: String, largeImage: String
-  ): Item!
+  createItem(title: String, description: String, price: Int, image: String, largeImage: String): Item!
 
-  updateItem(id: ID!, title: String, description: String, price: Int, image: String, largeImage: String
-  ): Item!
+  updateItem(id: ID!, title: String, description: String, price: Int, image: String, largeImage: String): Item!
 
   deleteItem(id: ID!): Item
 
@@ -23,6 +21,8 @@ type Mutation {
   resetPassword(resetToken: String!, password: String!, confirmPassword: String!): User!
 
   updatePermissions(permissions: [Permission], userId: ID!): User
+
+  addToCart(id: ID!): CartItem
 }
 
 type Query {
@@ -39,7 +39,12 @@ type Query {
 
 type User {
   id: ID!
+
   name: String!
+  
   email: String!
+  
   permissions: [Permission!]!
+  
+  cart: [CartItem!]!
 }
