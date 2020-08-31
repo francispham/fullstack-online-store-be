@@ -241,6 +241,27 @@ const Mutations = {
       },
     }, info);
   },
+
+  async removeFromCart(parent, args, context, info) {
+    // 1. Find the Cart Item
+    const cartItem = await context.db.query.cartItem({
+      where: {
+        id: args.id,
+      },
+    }, `{ id, user { id }}`);
+    // 2. Make sure we found an Item
+    if (!cartItem) throw new Error('No CartItem Found!');
+    // 3. Make sure they own that Cart Item
+    if (cartItem.user.id !== context.request.userId) {
+      throw new Error('Cheating??');
+    };
+    // 4. Delete that Cart Item
+    return context.db.mutation.deleteCartItem(
+      {
+        where: { id: args.id },
+      }, info
+    )
+  }
 };
 
 module.exports = Mutations;
