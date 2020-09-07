@@ -261,7 +261,35 @@ const Mutations = {
         where: { id: args.id },
       }, info
     )
-  }
+  },
+
+  async createOrder(parent, args, context, info) {
+    // 1. Query the Current User & make sure they Sign in
+    const { userId } = context.request;
+    if (!userId) throw new Error('Please Signed In');
+    const user = await context.db.query.user(
+      { where: { id: userId }},
+      `{
+        id
+        name
+        email
+        cart {
+          id
+          quantity
+          item { title price id description image }
+      }}`,
+    )
+    // 2. Recalculate the Total for the Price
+    const amount = user.cart.reduce(
+      (tally, cartItem) => tally + cartItem.item.price * cartItem.quantity, 0
+    );
+    console.log('amount:', amount);
+    // 3. Create the Stripe Charge (Turn Token into Money)
+    // 4. Convert the cartItem to orderItem
+    // 5. Create the Order
+    // 6. Cleanup - clean the Users Cart, Delete cartItems
+    // 7. Return the Order to the client
+  },
 };
 
 module.exports = Mutations;
