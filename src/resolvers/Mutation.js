@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
 const { randomBytes } = require('crypto');
 
+const stripe = require('../stripe');
 const { hasPermission } = require('../utils');
 const { transport, makeEmail } = require('../mail');
 
@@ -284,7 +285,12 @@ const Mutations = {
       (tally, cartItem) => tally + cartItem.item.price * cartItem.quantity, 0
     );
     console.log('amount:', amount);
-    // 3. Create the Stripe Charge (Turn Token into Money)
+    // 3. Create the Stripe Charge (Turn Token into Money) https://github.com/azmenak/react-stripe-checkout
+    const charge = await stripe.charges.create({
+      amount,
+      currency: 'CAD',
+      source: args.token,
+    });
     // 4. Convert the cartItem to orderItem
     // 5. Create the Order
     // 6. Cleanup - clean the Users Cart, Delete cartItems
