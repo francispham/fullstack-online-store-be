@@ -56,6 +56,17 @@ const Query = {
     // 4. Return the Order
     return order;
   },
+  async orders(parent, args, context, info) {
+    const { userId } = context.request;
+    if(!userId) {
+      throw new Error('Please Sign In');
+    };
+    return context.db.query.orders({
+      where: {
+        user: { id: userId }
+      }
+    }, info);
+  },
 };
 
 module.exports = Query;
