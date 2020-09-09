@@ -37,7 +37,25 @@ const Query = {
 
     // 3. If they do, Query All the Users!
     return context.db.query.users({}, info);
-  }
+  },
+  async order(parent, args, context, info) {
+    // 1. Make sure they are logged in
+    if (!context.request.userId) {
+      throw new Error('Please SignIn');
+    };
+    // 2. Query the Current Order
+    const order = await context.db.query.order({
+      where: { id: args.id },
+    }, info);
+    // 3. Check if the user have the Permission to see this Order
+    const ownsOrder = order.user.id === context.request.userId;
+    const hasPermissionToSeeOrder = context.request.user.permissions.includes('ADMIN');
+    if (!ownsOrder || !hasPermission) {
+      throw new Error('You Cant see the Order');
+    };
+    // 4. Return the Order
+    return order;
+  },
 };
 
 module.exports = Query;
