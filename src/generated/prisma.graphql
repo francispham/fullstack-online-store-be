@@ -1,5 +1,5 @@
 # source: https://us1.prisma.sh/francis-pham-bc112c/nextjs-backend/dev
-# timestamp: Sat Sep 05 2020 17:52:55 GMT-0700 (Pacific Daylight Time)
+# timestamp: Tue Sep 08 2020 16:42:53 GMT-0700 (Pacific Daylight Time)
 
 type AggregateCartItem {
   count: Int!
@@ -853,6 +853,7 @@ type OrderItem implements Node {
   largeImage: String!
   price: Int!
   quantity: Int!
+  user: User
 }
 
 """A connection to a list of items."""
@@ -873,6 +874,7 @@ input OrderItemCreateInput {
   largeImage: String!
   price: Int!
   quantity: Int
+  user: UserCreateOneInput
 }
 
 input OrderItemCreateManyInput {
@@ -1217,6 +1219,7 @@ input OrderItemUpdateDataInput {
   largeImage: String
   price: Int
   quantity: Int
+  user: UserUpdateOneInput
 }
 
 input OrderItemUpdateInput {
@@ -1226,6 +1229,7 @@ input OrderItemUpdateInput {
   largeImage: String
   price: Int
   quantity: Int
+  user: UserUpdateOneInput
 }
 
 input OrderItemUpdateManyDataInput {
@@ -1527,6 +1531,7 @@ input OrderItemWhereInput {
 
   """All values greater than or equal the given value."""
   quantity_gte: Int
+  user: UserWhereInput
 }
 
 input OrderItemWhereUniqueInput {
@@ -1932,6 +1937,15 @@ input UserUpdateManyMutationInput {
   resetToken: String
   resetTokenExpiry: Float
   permissions: UserUpdatepermissionsInput
+}
+
+input UserUpdateOneInput {
+  create: UserCreateInput
+  connect: UserWhereUniqueInput
+  disconnect: Boolean
+  delete: Boolean
+  update: UserUpdateDataInput
+  upsert: UserUpsertNestedInput
 }
 
 input UserUpdateOneRequiredInput {

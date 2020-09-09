@@ -277,7 +277,7 @@ const Mutations = {
         cart {
           id
           quantity
-          item { title price id description image }
+          item { title price id description image largeImage }
       }}`,
     )
     // 2. Recalculate the Total for the Price
@@ -292,9 +292,34 @@ const Mutations = {
       source: args.token,
     });
     // 4. Convert the cartItem to orderItem
+    const orderItems = user.cart.map(cartItem => {
+      const orderItem = {
+        ...cartItem.item,
+        quantity: cartItem.quantity,
+        user: { connect: { id: userId }},
+      };
+      delete orderItem.id; // Do not need id from above!
+      return orderItem;
+    });
     // 5. Create the Order
+    const order = await context.db.mutation.createOrder({
+      data: {
+        total: charge.amount,
+        charge: charge.id,
+        items: { create: orderItems },
+        user: { connect: { id: userId } },
+      },
+    });
+    console.log('order is HERE:', order)
     // 6. Cleanup - clean the Users Cart, Delete cartItems
-    // 7. Return the Order to the client
+    const cartItemIds = user.cart.map(cartItem => cartItem.id);
+    await context.db.mutation.deleteManyCartItems({ 
+      where: {
+        id_in: cartItemIds,
+      }
+    });
+    // 7. Return the Order to the Client
+    return order;
   },
 };
 
